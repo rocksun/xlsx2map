@@ -1,2 +1,3 @@
 # xlsx2map
-Simple Golang lib
+
+Simple Xlsx file to golang maps lib. 
