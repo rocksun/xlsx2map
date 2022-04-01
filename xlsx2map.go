@@ -1,17 +1,19 @@
 package xlsx2map
 
 import (
+	"fmt"
+
 	"github.com/xuri/excelize/v2"
 )
 
 type Options struct {
 }
 
-func Unmarshal(xslxFile string, def *XlsxFileDef, opts *Options) (map[string]interface{}, error) {
+func Unmarshal(xslxFile string, result interface{}, def *XlsxFileDef, opts *Options) error {
 
 	f, err := excelize.OpenFile(xslxFile)
 	if err != nil {
-		return nil, err
+		return err
 	}
 	defer func() {
 		// Close the spreadsheet.
@@ -20,22 +22,30 @@ func Unmarshal(xslxFile string, def *XlsxFileDef, opts *Options) (map[string]int
 		}
 	}()
 
-	xlsxMaps := make(map[string]interface{})
-
 	for _, sheetName := range f.GetSheetList() {
 		sheetDef := def.GetSheetDef(sheetName)
 		if sheetDef != nil {
 			sheetMap, err := parseSheet(f, sheetName, sheetDef)
 			if err != nil {
-				return nil, err
+				return err
 			}
-			xlsxMaps[sheetDef.Key] = sheetMap
+
+			switch v := result.(type) {
+			case map[string][]map[string]interface{}:
+				v[sheetDef.Key] = sheetMap
+				// fmt.Println("map[string]map[string]interface{}")
+			default:
+				fmt.Println(v)
+			}
+
+			// xlsxMaps[sheetDef.Key] = sheetMap
+			// fmt.Println(sheetMap)
 
 		}
 
 	}
 
-	return xlsxMaps, nil
+	return nil
 }
 
 func parseSheet(f *excelize.File, sheet string, sheetDef *SheetDef) ([]map[string]interface{}, error) {

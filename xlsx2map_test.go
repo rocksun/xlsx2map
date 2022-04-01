@@ -24,12 +24,19 @@ func TestUnmarshal(t *testing.T) {
 
 	xlsxFile := "sample_file.xlsx"
 
-	got, err := Unmarshal(xlsxFile, def, nil)
+	xlsxMaps := make(map[string][]map[string]interface{})
+
+	err = Unmarshal(xlsxFile, xlsxMaps, def, nil)
 	if err != nil {
 		t.Errorf("Unmarshal() error = %v, wantErr %v", err, nil)
-		return
 	}
-	fmt.Println(got)
+
+	if xlsxMaps["visitors"][1]["name"] != "Tom Hanks" {
+		t.Errorf("Expected 'Tom Hanks', but got %v", xlsxMaps["visitors"][1]["name"])
+
+	}
+
+	fmt.Println(xlsxMaps)
 	// if !reflect.DeepEqual(got, tt.want) {
 	// 	t.Errorf("Unmarshal() = %v, want %v", got, tt.want)
 	// }
