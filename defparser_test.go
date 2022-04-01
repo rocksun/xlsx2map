@@ -30,4 +30,14 @@ func TestXlsxFileDef(t *testing.T) {
 	if def.SheetDefs[0].FieldDefs[0].Key != key1 {
 		t.Errorf("expected %v, but got %v", key1, def.SheetDefs[0].FieldDefs[0].Key)
 	}
+
+	nilSheetDef := def.GetSheetDef("xxx")
+	if nilSheetDef != nil {
+		t.Errorf("expected return nil, but got %v", nilSheetDef)
+	}
+
+	realSheetDef := def.GetSheetDef("Visitors List")
+	if realSheetDef.Key != "visitors" {
+		t.Errorf("expected return visitors, but got %v", realSheetDef.Key)
+	}
 }

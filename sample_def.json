@@ -10,7 +10,8 @@
                 },
                 {
                     "key": "birthday",
-                    "aliases": ["生日", "Birthday"]
+                    "aliases": ["生日", "Birthday"],
+                    "dataType": "ExcelDate"
                 }
 
             ]
