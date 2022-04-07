@@ -19,6 +19,13 @@ type SheetDef struct {
 	FieldDefs []*FieldDef `json:"fields"`
 }
 
+func (sheetDef *SheetDef) GetTitle() string {
+	if len(sheetDef.Aliases) >= 1 {
+		return sheetDef.Aliases[0]
+	}
+	return sheetDef.Key
+}
+
 func (sheetDef *SheetDef) ValidAlias(name string) bool {
 	for _, alias := range sheetDef.Aliases {
 		if alias == name {
@@ -57,6 +64,13 @@ func (fieldDef *FieldDef) ValidAlias(name string) bool {
 func (fieldDef *FieldDef) ParseValue(valueStr string) (interface{}, error) {
 	parseFunc := ParseDataFuncs.Get(fieldDef.DataType)
 	return parseFunc(valueStr, fieldDef)
+}
+
+func (fieldDef *FieldDef) GetTitle() string {
+	if len(fieldDef.Aliases) >= 1 {
+		return fieldDef.Aliases[0]
+	}
+	return fieldDef.Key
 }
 
 type Columns struct {

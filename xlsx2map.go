@@ -1,12 +1,61 @@
 package xlsx2map
 
 import (
+	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/xuri/excelize/v2"
 )
 
 type Options struct {
+}
+
+func Marshal(outFilePath string, input interface{}, def *XlsxFileDef) error {
+
+	f := excelize.NewFile()
+	if data, ok := input.(map[string][]map[string]interface{}); ok {
+		// fmt.Println("map[string]map[string]interface{}")
+		for index, sheetDef := range def.SheetDefs {
+			f.NewSheet(sheetDef.GetTitle())
+
+			for colIndex, fieldDef := range sheetDef.FieldDefs {
+				columnName, columnErr := excelize.ColumnNumberToName(colIndex + 1)
+				if columnErr != nil {
+					return columnErr
+				}
+				f.SetCellValue(sheetDef.GetTitle(), columnName+"1", fieldDef.GetTitle())
+
+			}
+
+			sheetData := data[sheetDef.Key]
+
+			for i := 0; i < len(sheetData); i++ {
+				rowData := sheetData[i]
+				for colIndex, fieldDef := range sheetDef.FieldDefs {
+					columnName, columnErr := excelize.ColumnNumberToName(colIndex + 1)
+					if columnErr != nil {
+						return columnErr
+					}
+					f.SetCellValue(sheetDef.GetTitle(), columnName+strconv.Itoa(i+2), rowData[fieldDef.Key])
+				}
+
+			}
+
+			fmt.Println(data, index)
+
+		}
+		// f.SetActiveSheet(index)
+		if err := f.SaveAs(outFilePath); err != nil {
+			return err
+		}
+
+	} else {
+		return errors.New("not supported data type")
+	}
+
+	return nil
+
 }
 
 func Unmarshal(xslxFile string, result interface{}, def *XlsxFileDef, opts *Options) error {

@@ -41,4 +41,9 @@ func TestUnmarshal(t *testing.T) {
 	// 	t.Errorf("Unmarshal() = %v, want %v", got, tt.want)
 	// }
 
+	outErr := Marshal("test_out.xlsx", xlsxMaps, def)
+	if outErr != nil {
+		t.Errorf("Expected no output err, but got %v", outErr)
+	}
+
 }

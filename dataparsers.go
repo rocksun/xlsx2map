@@ -10,7 +10,7 @@ type ParseDataFuncFactory struct {
 	ParseDataFuncs map[string]ParseDataFunc
 }
 
-func GettParseDataFuncFactory() *ParseDataFuncFactory {
+func GetParseDataFuncFactory() *ParseDataFuncFactory {
 	factory := &ParseDataFuncFactory{make(map[string]ParseDataFunc)}
 	factory.AddFunc("string", ParseString)
 	factory.AddFunc("int", ParseInt)
@@ -33,7 +33,7 @@ func (factory *ParseDataFuncFactory) AddFunc(dataType string, pdFunc ParseDataFu
 var ParseDataFuncs *ParseDataFuncFactory
 
 func init() {
-	ParseDataFuncs = GettParseDataFuncFactory()
+	ParseDataFuncs = GetParseDataFuncFactory()
 }
 
 type ParseDataFunc func(valueStr string, ops interface{}) (interface{}, error)
@@ -64,6 +64,7 @@ func ParseExcelDate(valueStr string, ops interface{}) (interface{}, error) {
 		return nil, err
 	}
 	excelTime, err := excelize.ExcelDateToTime(excelDate, false)
+	// excelize.time
 	if err != nil {
 		return nil, err
 	}
