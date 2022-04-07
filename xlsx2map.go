@@ -3,6 +3,7 @@ package xlsx2map
 import (
 	"errors"
 	"fmt"
+	"os"
 	"strconv"
 
 	"github.com/xuri/excelize/v2"
@@ -16,7 +17,7 @@ func Marshal(outFilePath string, input interface{}, def *XlsxFileDef) error {
 	f := excelize.NewFile()
 	if data, ok := input.(map[string][]map[string]interface{}); ok {
 		// fmt.Println("map[string]map[string]interface{}")
-		for index, sheetDef := range def.SheetDefs {
+		for _, sheetDef := range def.SheetDefs {
 			f.NewSheet(sheetDef.GetTitle())
 
 			for colIndex, fieldDef := range sheetDef.FieldDefs {
@@ -42,7 +43,7 @@ func Marshal(outFilePath string, input interface{}, def *XlsxFileDef) error {
 
 			}
 
-			fmt.Println(data, index)
+			// fmt.Println(data, index)
 
 		}
 		// f.SetActiveSheet(index)
@@ -143,4 +144,49 @@ func PrepareRow(values []string, columns *Columns) map[string]interface{} {
 
 	}
 	return data
+}
+
+func LoadFromFile(excelFile, excelDefFile string, opts *Options) (map[string][]map[string]interface{}, error) {
+	def := &XlsxFileDef{}
+	file, err := os.Open(excelDefFile)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	loadErr := LoadXlsxFileDef(file, def)
+	if loadErr != nil {
+		return nil, loadErr
+	}
+
+	xlsxMaps := make(map[string][]map[string]interface{})
+
+	err = Unmarshal(excelFile, xlsxMaps, def, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return xlsxMaps, nil
+
+}
+
+func ExportToFile(data map[string][]map[string]interface{}, outExcelFile, excelDefFile string, opts *Options) error {
+	def := &XlsxFileDef{}
+	file, err := os.Open(excelDefFile)
+
+	if err != nil {
+		return err
+	}
+
+	defer file.Close()
+
+	loadErr := LoadXlsxFileDef(file, def)
+	if loadErr != nil {
+		return loadErr
+	}
+
+	return Marshal(outExcelFile, data, def)
+
 }

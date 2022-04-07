@@ -47,3 +47,16 @@ func TestUnmarshal(t *testing.T) {
 	}
 
 }
+
+func TestLoadFromFile(t *testing.T) {
+	data, err := LoadFromFile("sample_file.xlsx", "sample_def.json", nil)
+	if err != nil {
+		t.Errorf("expected no error, but got %v", err)
+	}
+	// fmt.Println(data)
+
+	err = ExportToFile(data, "test_out.xlsx", "sample_def.json", nil)
+	if err != nil {
+		t.Errorf("expected no error, but got %v", err)
+	}
+}
