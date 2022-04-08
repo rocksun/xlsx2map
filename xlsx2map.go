@@ -132,7 +132,7 @@ func PrepareRow(values []string, columns *Columns) map[string]interface{} {
 	data := make(map[string]interface{})
 	for index, value := range values {
 		fieldDef := columns.GetFieldDef(index)
-		if fieldDef.Key != "" {
+		if fieldDef != nil && fieldDef.Key != "" {
 			v, err := fieldDef.ParseValue(value)
 			if err != nil {
 				data[fieldDef.Key] = err
